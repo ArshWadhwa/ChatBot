@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/chatbot_db
+    username: postgres
+    password: postgres
+
+openrouter:
+  api:
+    key: "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"  # 🔄 Updated OpenRouter API key
+
+server:
+  port: 8082

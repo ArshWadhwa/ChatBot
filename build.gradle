@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+    id "org.flywaydb.flyway" version "7.3.1"
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'application'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+String dbName = System.getenv("DB_USER") != null ? System.getenv("DB_NAME") : "chatbot_db";
+String username = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "postgres";
+String password = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : "postgres";
+
+flyway {
+    url = "jdbc:postgresql://localhost:5432/"+dbName
+    user = username
+    password = password
+    locations = ["filesystem:${project.projectDir}/src/main/resources/migrations"]
+    baselineVersion = "0"
+    baselineOnMigrate = true
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation 'org.postgresql:postgresql:42.7.2'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // Needed for API calls
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.108.Final'
+}
+
+task migrateChat(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
+    url = "jdbc:postgresql://localhost:5432/"+dbName
+    user = username
+    password = password
+    locations = ["filesystem:${project.projectDir}/src/main/resources/migrations"]
+    baselineVersion = "0"
+    baselineOnMigrate = true
+}
+
+test {
+    useJUnitPlatform()
+}
+
+//To run the class name from command line using gradle run
+
+application {
+    mainClass = 'chatBot.Main'
+}
